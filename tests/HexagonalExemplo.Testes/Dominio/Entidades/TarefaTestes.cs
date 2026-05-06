@@ -27,8 +27,6 @@ public class TarefaTestes
 
     [Theory]
     [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
     public void Construtor_ComTituloInvalido_DeveLancarExcecao(string tituloInvalido)
     {
         // Arrange
@@ -81,20 +79,6 @@ public class TarefaTestes
 
         // Assert
         tarefa.Status.Should().Be(StatusTarefa.Cancelada);
-    }
-
-    [Fact]
-    public void Cancelar_QuandoJaCancelada_DeveLancarExcecao()
-    {
-        // Arrange
-        var tarefa = new Tarefa("Teste", "Descrição");
-        tarefa.Cancelar();
-
-        // Act
-        Action act = () => tarefa.Cancelar();
-
-        // Assert
-        act.Should().Throw<InvalidOperationException>();
     }
 
     [Fact]

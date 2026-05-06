@@ -190,10 +190,16 @@ public class TarefaCasoDeUsoTestes
     }
 
     [Fact]
-    public async Task RemoverAsync_DeveChamarRepositorio()
+    public async Task RemoverAsync_QuandoExiste_DeveChamarRepositorio()
     {
         // Arrange
         var id = Guid.NewGuid();
+        var tarefa = new Tarefa("Tarefa Teste", "Descrição");
+        typeof(Tarefa).GetProperty("Id")?.SetValue(tarefa, id);
+        
+        _repositorioMock
+            .Setup(r => r.ObterPorIdAsync(id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tarefa);
         
         _repositorioMock
             .Setup(r => r.RemoverAsync(id, It.IsAny<CancellationToken>()))
@@ -203,6 +209,7 @@ public class TarefaCasoDeUsoTestes
         await _casoDeUso.RemoverAsync(id);
 
         // Assert
+        _repositorioMock.Verify(r => r.ObterPorIdAsync(id, It.IsAny<CancellationToken>()), Times.Once);
         _repositorioMock.Verify(r => r.RemoverAsync(id, It.IsAny<CancellationToken>()), Times.Once);
     }
 }
