@@ -19,7 +19,15 @@ builder.Services.AddSingleton<IConexaoDapper>(_ => new ConexaoDapper(connectionS
 
 // Injeção de dependências - Ports and Adapters
 builder.Services.AddScoped<ITarefaRepositorio, TarefaRepositorio>();
-builder.Services.AddScoped<ITarefaCasoDeUso, TarefaCasoDeUso>();
+
+// Registrar casos de uso individuais
+builder.Services.AddScoped<IListarTarefasCasoDeUso, ListarTarefasCasoDeUso>();
+builder.Services.AddScoped<IObterTarefaPorIdCasoDeUso, ObterTarefaPorIdCasoDeUso>();
+builder.Services.AddScoped<ICriarTarefaCasoDeUso, CriarTarefaCasoDeUso>();
+builder.Services.AddScoped<IAtualizarTarefaCasoDeUso, AtualizarTarefaCasoDeUso>();
+builder.Services.AddScoped<IConcluirTarefaCasoDeUso, ConcluirTarefaCasoDeUso>();
+builder.Services.AddScoped<ICancelarTarefaCasoDeUso, CancelarTarefaCasoDeUso>();
+builder.Services.AddScoped<IRemoverTarefaCasoDeUso, RemoverTarefaCasoDeUso>();
 
 // FluentValidation - registrar todos os validadores do assembly
 builder.Services.AddValidatorsFromAssemblyContaining<CriarTarefaRequestValidador>();

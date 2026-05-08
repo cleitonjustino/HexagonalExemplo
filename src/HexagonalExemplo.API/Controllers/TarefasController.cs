@@ -9,11 +9,30 @@ namespace HexagonalExemplo.API.Controllers;
 [Produces("application/json")]
 public class TarefasController : ControllerBase
 {
-    private readonly ITarefaCasoDeUso _tarefaCasoDeUso;
+    private readonly IListarTarefasCasoDeUso _listarCasoDeUso;
+    private readonly IObterTarefaPorIdCasoDeUso _obterPorIdCasoDeUso;
+    private readonly ICriarTarefaCasoDeUso _criarCasoDeUso;
+    private readonly IAtualizarTarefaCasoDeUso _atualizarCasoDeUso;
+    private readonly IConcluirTarefaCasoDeUso _concluirCasoDeUso;
+    private readonly ICancelarTarefaCasoDeUso _cancelarCasoDeUso;
+    private readonly IRemoverTarefaCasoDeUso _removerCasoDeUso;
 
-    public TarefasController(ITarefaCasoDeUso tarefaCasoDeUso)
+    public TarefasController(
+        IListarTarefasCasoDeUso listarCasoDeUso,
+        IObterTarefaPorIdCasoDeUso obterPorIdCasoDeUso,
+        ICriarTarefaCasoDeUso criarCasoDeUso,
+        IAtualizarTarefaCasoDeUso atualizarCasoDeUso,
+        IConcluirTarefaCasoDeUso concluirCasoDeUso,
+        ICancelarTarefaCasoDeUso cancelarCasoDeUso,
+        IRemoverTarefaCasoDeUso removerCasoDeUso)
     {
-        _tarefaCasoDeUso = tarefaCasoDeUso ?? throw new ArgumentNullException(nameof(tarefaCasoDeUso));
+        _listarCasoDeUso = listarCasoDeUso ?? throw new ArgumentNullException(nameof(listarCasoDeUso));
+        _obterPorIdCasoDeUso = obterPorIdCasoDeUso ?? throw new ArgumentNullException(nameof(obterPorIdCasoDeUso));
+        _criarCasoDeUso = criarCasoDeUso ?? throw new ArgumentNullException(nameof(criarCasoDeUso));
+        _atualizarCasoDeUso = atualizarCasoDeUso ?? throw new ArgumentNullException(nameof(atualizarCasoDeUso));
+        _concluirCasoDeUso = concluirCasoDeUso ?? throw new ArgumentNullException(nameof(concluirCasoDeUso));
+        _cancelarCasoDeUso = cancelarCasoDeUso ?? throw new ArgumentNullException(nameof(cancelarCasoDeUso));
+        _removerCasoDeUso = removerCasoDeUso ?? throw new ArgumentNullException(nameof(removerCasoDeUso));
     }
 
     /// <summary>
@@ -24,7 +43,7 @@ public class TarefasController : ControllerBase
     public async Task<ActionResult<IEnumerable<TarefaResponse>>> ListarTodas(
         CancellationToken cancellationToken = default)
     {
-        var tarefas = await _tarefaCasoDeUso.ListarTodasAsync(cancellationToken);
+        var tarefas = await _listarCasoDeUso.ListarTodasAsync(cancellationToken);
         return Ok(tarefas);
     }
 
@@ -38,7 +57,7 @@ public class TarefasController : ControllerBase
         [FromRoute] Guid id,
         CancellationToken cancellationToken = default)
     {
-        var tarefa = await _tarefaCasoDeUso.ObterPorIdAsync(id, cancellationToken);
+        var tarefa = await _obterPorIdCasoDeUso.ObterPorIdAsync(id, cancellationToken);
         if (tarefa == null)
             return NotFound(new { mensagem = $"Tarefa com ID {id} não encontrada" });
 
@@ -55,7 +74,7 @@ public class TarefasController : ControllerBase
         [FromBody] CriarTarefaRequest request,
         CancellationToken cancellationToken = default)
     {
-        var tarefa = await _tarefaCasoDeUso.CriarAsync(request, cancellationToken);
+        var tarefa = await _criarCasoDeUso.CriarAsync(request, cancellationToken);
         return CreatedAtAction(nameof(ObterPorId), new { id = tarefa.Id }, tarefa);
     }
 
@@ -71,7 +90,7 @@ public class TarefasController : ControllerBase
         [FromBody] AtualizarTarefaRequest request,
         CancellationToken cancellationToken = default)
     {
-        var tarefa = await _tarefaCasoDeUso.AtualizarAsync(id, request, cancellationToken);
+        var tarefa = await _atualizarCasoDeUso.AtualizarAsync(id, request, cancellationToken);
         return Ok(tarefa);
     }
 
@@ -86,7 +105,7 @@ public class TarefasController : ControllerBase
         [FromRoute] Guid id,
         CancellationToken cancellationToken = default)
     {
-        await _tarefaCasoDeUso.ConcluirAsync(id, cancellationToken);
+        await _concluirCasoDeUso.ConcluirAsync(id, cancellationToken);
         return NoContent();
     }
 
@@ -101,7 +120,7 @@ public class TarefasController : ControllerBase
         [FromRoute] Guid id,
         CancellationToken cancellationToken = default)
     {
-        await _tarefaCasoDeUso.CancelarAsync(id, cancellationToken);
+        await _cancelarCasoDeUso.CancelarAsync(id, cancellationToken);
         return NoContent();
     }
 
@@ -115,7 +134,7 @@ public class TarefasController : ControllerBase
         [FromRoute] Guid id,
         CancellationToken cancellationToken = default)
     {
-        await _tarefaCasoDeUso.RemoverAsync(id, cancellationToken);
+        await _removerCasoDeUso.RemoverAsync(id, cancellationToken);
         return NoContent();
     }
 }
