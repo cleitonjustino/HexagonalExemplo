@@ -19,7 +19,12 @@ public class TarefaCasoDeUsoTestes
     private readonly Mock<IBarramentoDeMensagens> _barramentoMock;
     private readonly IValidator<CriarTarefaRequest> _criarValidador;
     private readonly IValidator<AtualizarTarefaRequest> _atualizarValidador;
-    private readonly TarefaCasoDeUso _casoDeUso;
+    private readonly CriarTarefaCasoDeUso _criarCasoDeUso;
+    private readonly ObterTarefaPorIdCasoDeUso _obterPorIdCasoDeUso;
+    private readonly ConcluirTarefaCasoDeUso _concluirCasoDeUso;
+    private readonly ListarTarefasCasoDeUso _listarCasoDeUso;
+    private readonly AtualizarTarefaCasoDeUso _atualizarCasoDeUso;
+    private readonly RemoverTarefaCasoDeUso _removerCasoDeUso;
 
     public TarefaCasoDeUsoTestes()
     {
@@ -30,11 +35,12 @@ public class TarefaCasoDeUsoTestes
         _criarValidador = new CriarTarefaRequestValidador();
         _atualizarValidador = new AtualizarTarefaRequestValidador();
         
-        _casoDeUso = new TarefaCasoDeUso(
-            _repositorioMock.Object,
-            _serviceProviderMock.Object,
-            _criarValidador,
-            _atualizarValidador);
+        _criarCasoDeUso = new CriarTarefaCasoDeUso(_repositorioMock.Object, _criarValidador);
+        _obterPorIdCasoDeUso = new ObterTarefaPorIdCasoDeUso(_repositorioMock.Object);
+        _concluirCasoDeUso = new ConcluirTarefaCasoDeUso(_repositorioMock.Object, _serviceProviderMock.Object);
+        _listarCasoDeUso = new ListarTarefasCasoDeUso(_repositorioMock.Object);
+        _atualizarCasoDeUso = new AtualizarTarefaCasoDeUso(_repositorioMock.Object, _atualizarValidador);
+        _removerCasoDeUso = new RemoverTarefaCasoDeUso(_repositorioMock.Object);
 
         _serviceProviderMock
             .Setup(x => x.GetService(typeof(IBarramentoDeMensagens)))
@@ -54,7 +60,7 @@ public class TarefaCasoDeUsoTestes
             .Returns(Task.CompletedTask);
 
         // Act
-        var resultado = await _casoDeUso.CriarAsync(request);
+        var resultado = await _criarCasoDeUso.CriarAsync(request);
 
         // Assert
         resultado.Should().NotBeNull();
@@ -71,7 +77,7 @@ public class TarefaCasoDeUsoTestes
         var request = new CriarTarefaRequest("", "Descrição");
 
         // Act
-        Func<Task> act = () => _casoDeUso.CriarAsync(request);
+        Func<Task> act = () => _criarCasoDeUso.CriarAsync(request);
 
         // Assert
         await act.Should().ThrowAsync<HexagonalExemplo.Dominio.Excecoes.ValidacaoExcecao>();
@@ -91,7 +97,7 @@ public class TarefaCasoDeUsoTestes
             .ReturnsAsync(tarefa);
 
         // Act
-        var resultado = await _casoDeUso.ObterPorIdAsync(id);
+        var resultado = await _obterPorIdCasoDeUso.ObterPorIdAsync(id);
 
         // Assert
         resultado.Should().NotBeNull();
@@ -109,7 +115,7 @@ public class TarefaCasoDeUsoTestes
             .ReturnsAsync((Tarefa?)null);
 
         // Act
-        var resultado = await _casoDeUso.ObterPorIdAsync(id);
+        var resultado = await _obterPorIdCasoDeUso.ObterPorIdAsync(id);
 
         // Assert
         resultado.Should().BeNull();
@@ -132,7 +138,7 @@ public class TarefaCasoDeUsoTestes
             .Returns(Task.CompletedTask);
 
         // Act
-        await _casoDeUso.ConcluirAsync(id);
+        await _concluirCasoDeUso.ConcluirAsync(id);
 
         // Assert
         tarefa.Status.Should().Be(HexagonalExemplo.Dominio.ObjetosDeValor.StatusTarefa.Concluida);
@@ -156,7 +162,7 @@ public class TarefaCasoDeUsoTestes
             .ReturnsAsync(tarefas);
 
         // Act
-        var resultado = await _casoDeUso.ListarTodasAsync();
+        var resultado = await _listarCasoDeUso.ListarTodasAsync();
 
         // Assert
         resultado.Should().HaveCount(3);
@@ -181,7 +187,7 @@ public class TarefaCasoDeUsoTestes
             .Returns(Task.CompletedTask);
 
         // Act
-        var resultado = await _casoDeUso.AtualizarAsync(id, request);
+        var resultado = await _atualizarCasoDeUso.AtualizarAsync(id, request);
 
         // Assert
         resultado.Titulo.Should().Be(request.Titulo);
@@ -206,7 +212,7 @@ public class TarefaCasoDeUsoTestes
             .Returns(Task.CompletedTask);
 
         // Act
-        await _casoDeUso.RemoverAsync(id);
+        await _removerCasoDeUso.RemoverAsync(id);
 
         // Assert
         _repositorioMock.Verify(r => r.ObterPorIdAsync(id, It.IsAny<CancellationToken>()), Times.Once);
