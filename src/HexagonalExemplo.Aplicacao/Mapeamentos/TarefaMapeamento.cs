@@ -3,6 +3,7 @@ using HexagonalExemplo.Dominio.Entidades;
 
 namespace HexagonalExemplo.Aplicacao.Mapeamentos;
 
+//TODO : Usar AutoMapper para evitar código repetitivo e facilitar a manutenção dos mapeamentos entre entidades e DTOs.
 public static class TarefaMapeamento
 {
     public static TarefaResponse ParaResponse(this Tarefa tarefa)

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using HexagonalExemplo.Dominio.Entidades;
 using HexagonalExemplo.Dominio.ObjetosDeValor;
+using Dapper;
 using HexagonalExemplo.Infraestrutura.Persistencia;
 using HexagonalExemplo.Infraestrutura.Repositorios;
 using Xunit;
@@ -18,8 +19,24 @@ public class TarefaRepositorioTestes : IDisposable
         var connectionString = "Data Source=:memory:;Mode=Memory;Cache=Shared";
         _conexaoDapper = new ConexaoDapper(connectionString);
         
-        // Criar tabelas usando o inicializador
-        InicializadorBancoDados.Inicializar(_conexaoDapper);
+        // Criar tabelas diretamente para os testes (substitui o antigo InicializadorBancoDados)
+        using (var conexao = _conexaoDapper.CriarConexao())
+        {
+            var sql = @"
+            CREATE TABLE IF NOT EXISTS Tarefas (
+                Id TEXT PRIMARY KEY,
+                Titulo TEXT NOT NULL,
+                Descricao TEXT,
+                Status INTEGER NOT NULL,
+                DataCriacao TEXT NOT NULL,
+                DataConclusao TEXT
+            );
+
+            CREATE INDEX IF NOT EXISTS IX_Tarefas_Status ON Tarefas(Status);
+            ";
+
+            conexao.Execute(sql);
+        }
         
         _repositorio = new TarefaRepositorio(_conexaoDapper);
     }

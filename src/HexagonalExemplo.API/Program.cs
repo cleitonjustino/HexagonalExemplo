@@ -1,7 +1,9 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using HexagonalExemplo.Aplicacao.CasosDeUso;
+using FluentMigrator.Runner;
+using HexagonalExemplo.Aplicacao.CasosDeUso.Tarefas;
 using HexagonalExemplo.Aplicacao.Interfaces;
+using HexagonalExemplo.Infraestrutura.Migrations;
 using HexagonalExemplo.Aplicacao.Validadores;
 using HexagonalExemplo.Dominio.Repositorios;
 using HexagonalExemplo.Infraestrutura.Persistencia;
@@ -29,6 +31,14 @@ builder.Services.AddScoped<IConcluirTarefaCasoDeUso, ConcluirTarefaCasoDeUso>();
 builder.Services.AddScoped<ICancelarTarefaCasoDeUso, CancelarTarefaCasoDeUso>();
 builder.Services.AddScoped<IRemoverTarefaCasoDeUso, RemoverTarefaCasoDeUso>();
 
+// FluentMigrator - configurar runner para SQLite e apontar para assembly de migrations
+builder.Services.AddFluentMigratorCore()
+    .ConfigureRunner(rb => rb
+        .AddSQLite()
+        .WithGlobalConnectionString(connectionString)
+        .ScanIn(typeof(_001_CreateTarefas).Assembly).For.Migrations())
+    .AddLogging(lb => lb.AddFluentMigratorConsole());
+
 // FluentValidation - registrar todos os validadores do assembly
 builder.Services.AddValidatorsFromAssemblyContaining<CriarTarefaRequestValidador>();
 
@@ -43,11 +53,26 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
-// Inicializar banco de dados SQLite em memória
+// Se a aplicação for executada com o argumento `--migrate-only`, aplica migrations e sai
+if (args is not null && args.Contains("--migrate-only"))
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+        runner.MigrateUp();
+    }
+
+    Console.WriteLine("Migrations aplicadas (modo migrate-only).");
+    return;
+}
+
+// Executar migrations e semear dados (comportamento padrão na inicialização)
 using (var scope = app.Services.CreateScope())
 {
+    var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+    runner.MigrateUp();
+
     var conexaoDapper = scope.ServiceProvider.GetRequiredService<IConexaoDapper>();
-    InicializadorBancoDados.Inicializar(conexaoDapper);
     await SemearDadosAsync(conexaoDapper);
 }
 

@@ -1,12 +1,11 @@
 using FluentAssertions;
 using FluentValidation;
-using HexagonalExemplo.Aplicacao.CasosDeUso;
+using HexagonalExemplo.Aplicacao.CasosDeUso.Tarefas;
 using HexagonalExemplo.Aplicacao.DTOs;
 using HexagonalExemplo.Aplicacao.Validadores;
 using HexagonalExemplo.Dominio.BarramentoDeMensagens;
 using HexagonalExemplo.Dominio.Entidades;
 using HexagonalExemplo.Dominio.Repositorios;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 

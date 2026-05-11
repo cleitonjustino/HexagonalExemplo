@@ -2,22 +2,23 @@ using HexagonalExemplo.Aplicacao.Interfaces;
 using HexagonalExemplo.Dominio.Excecoes;
 using HexagonalExemplo.Dominio.Repositorios;
 
-namespace HexagonalExemplo.Aplicacao.CasosDeUso;
+namespace HexagonalExemplo.Aplicacao.CasosDeUso.Tarefas;
 
-public class RemoverTarefaCasoDeUso : IRemoverTarefaCasoDeUso
+public class CancelarTarefaCasoDeUso : ICancelarTarefaCasoDeUso
 {
     private readonly ITarefaRepositorio _tarefaRepositorio;
 
-    public RemoverTarefaCasoDeUso(ITarefaRepositorio tarefaRepositorio)
+    public CancelarTarefaCasoDeUso(ITarefaRepositorio tarefaRepositorio)
     {
         _tarefaRepositorio = tarefaRepositorio ?? throw new ArgumentNullException(nameof(tarefaRepositorio));
     }
 
-    public async Task RemoverAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task CancelarAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var tarefa = await _tarefaRepositorio.ObterPorIdAsync(id, cancellationToken)
             ?? throw new TarefaNaoEncontradaExcecao(id);
 
-        await _tarefaRepositorio.RemoverAsync(id, cancellationToken);
+        tarefa.Cancelar();
+        await _tarefaRepositorio.AtualizarAsync(tarefa, cancellationToken);
     }
 }

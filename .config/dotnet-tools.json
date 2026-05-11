@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "FluentMigrator.DotNet.Cli": {
+      "version": "3.3.1",
+      "commands": [ "fm" ]
+    }
+  }
+}

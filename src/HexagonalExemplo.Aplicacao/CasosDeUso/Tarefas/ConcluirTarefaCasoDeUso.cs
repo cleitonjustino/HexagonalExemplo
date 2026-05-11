@@ -5,7 +5,7 @@ using HexagonalExemplo.Dominio.Eventos;
 using HexagonalExemplo.Dominio.Excecoes;
 using HexagonalExemplo.Dominio.Repositorios;
 
-namespace HexagonalExemplo.Aplicacao.CasosDeUso;
+namespace HexagonalExemplo.Aplicacao.CasosDeUso.Tarefas;
 
 public class ConcluirTarefaCasoDeUso : IConcluirTarefaCasoDeUso
 {

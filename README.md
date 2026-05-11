@@ -137,6 +137,41 @@ dotnet run
 # http://localhost:5000/scalar
 ```
 
+## 🔧 Migrations (FluentMigrator)
+
+As migrations são aplicadas automaticamente na inicialização da API. Para aplicar migrations manualmente sem executar o servidor, use a opção `--migrate-only` ao executar o projeto API.
+
+PowerShell:
+
+```powershell
+dotnet run --project src/HexagonalExemplo.API -- --migrate-only
+```
+
+Bash / macOS / Linux:
+
+```bash
+dotnet run --project src/HexagonalExemplo.API -- --migrate-only
+```
+
+Também há scripts de conveniência em `scripts/`:
+
+- `scripts/apply-migrations.ps1` — PowerShell
+- `scripts/apply-migrations.sh` — Bash
+ - `tools/MigrateRunner` — small .NET tool to apply migrations (`dotnet run --project tools/MigrateRunner`)
+ - `scripts/run-tool-migrations.ps1` / `scripts/run-tool-migrations.sh` — convenience scripts to run the tool
+
+Optional: there's a local tool manifest for the FluentMigrator CLI at `.config/dotnet-tools.json`. You can install the local tools with:
+
+```powershell
+dotnet tool restore
+```
+
+After `dotnet tool restore` you can run the FluentMigrator CLI (if installed by the manifest) or use the provided `MigrateRunner` project.
+
+Ambas executam `dotnet run --project src/HexagonalExemplo.API -- --migrate-only`.
+
+Observação: o projeto usa SQLite em memória com `Cache=Shared`. Ao aplicar migrations manualmente, certifique-se de que o processo que executa as migrations mantenha a conexão aberta (o script usa `dotnet run` que cria e encerra o processo — para ambientes persistentes, execute a API normalmente).
+
 ## 📚 Endpoints da API
 
 | Método | Endpoint | Descrição |

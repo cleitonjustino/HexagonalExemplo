@@ -6,7 +6,7 @@ using HexagonalExemplo.Dominio.Entidades;
 using HexagonalExemplo.Dominio.Excecoes;
 using HexagonalExemplo.Dominio.Repositorios;
 
-namespace HexagonalExemplo.Aplicacao.CasosDeUso;
+namespace HexagonalExemplo.Aplicacao.CasosDeUso.Tarefas;
 
 public class CriarTarefaCasoDeUso : ICriarTarefaCasoDeUso
 {
